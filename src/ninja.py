@@ -298,10 +298,10 @@ class WebsiteVulnerabilityScanner:
 
     def save_results_to_file(self):
         """
-        Saves the results of the vulnerability scan to a text file with date and name of the test.
+        Saves the results of the vulnerability scan to a text file with name, date and time of the test.
         """
-        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        file_name = f"vulnerability_scan_results_{current_date}.txt"
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        file_name = f"ninja_scan_results_{current_time}.txt"
         with open(file_name, "w") as file:
             file.write("Vulnerability Scan Results:\n")
             for link in self.vulnerable_links:
