@@ -1,17 +1,18 @@
-# 
+# NinjaProbe is a versatile website vulnerability scanner designed to identify and mitigate security vulnerabilities with ease.
 print(" _   _ _       _        ______          _          ")
 print("| \ | (_)     (_)       | ___ \        | |         ")
 print("|  \| |_ _ __  _  __ _  | |_/ / __ ___ | |__   ___ ")
-print("| . ` | | '_ \| |/ _` | |  __/ '__/ _ \| '_ \ / _ \")
+print("|     | |    \| |/ _  | |  __/   _/ _ \|    \ / _ \ ")
 print("| |\  | | | | | | (_| | | |  | | | (_) | |_) |  __/")
 print("\_| \_/_|_| |_| |\__,_| \_|  |_|  \___/|_.__/ \___|")
 print("             _/ |                                  ")
 print("            |__/                                   ") 
 print("   + https://github.com/sambitpoddar/ninjaprobe +  ")
 print("                                                   ")
-print(allthetests)
-comment = '''
-[!] List of Vulnerability Tests (Select with Caution)
+
+print('''
+[!] List of Vulnerability Tests (Select with Caution):
+
 1. SQL Injection                             16. Missing Security Headers
 2. Cross-Site Scripting (XSS)                17. Server-Side Request Forgery (SSRF)
 3. Cross-Site Request Forgery (CSRF)         18. XML Injection
@@ -28,8 +29,7 @@ comment = '''
 14. SSL/TLS Issues                           29. Misconfigured Security Headers
 15. Insecure CORS Policy                     30. Weak Cryptography
                                              31. Session Fixation
-
-'''
+''')
 
 import requests
 from bs4 import BeautifulSoup
@@ -61,11 +61,24 @@ class WebsiteVulnerabilityScanner:
                 self.links_to_scan.add(link)
 
     def test_sql_injection(self, url):
+        """
+        Tests for SQL Injection vulnerability by injecting SQL syntax into the URL parameters.
+    
+        Args:
+            url (str): The URL to test for SQL Injection vulnerability.
+        """
         response = self.session.get(url)
         if re.search(r"SQL syntax.*MySQL", response.text):
             self.vulnerable_links.add(url)
 
+
     def test_xss(self, url):
+        """
+        Tests for Cross-Site Scripting (XSS) vulnerability by injecting a script tag into the URL parameters.
+    
+        Args:
+            url (str): The URL to test for XSS vulnerability.
+        """
         response = self.session.get(url)
         if "<script>alert(" in response.text:
             self.vulnerable_links.add(url)
@@ -283,6 +296,11 @@ class WebsiteVulnerabilityScanner:
 # Example usage:
 if __name__ == "__main__":
     url = input("Enter the website URL: ")
-    scanner = WebsiteVulnerabilityScanner(url)
+    use_proxy = input("Do you want to use a proxy? (yes/no): ").lower()
+    proxy = None
+    if use_proxy == "yes":
+        proxy_ip = input("Enter the proxy IP address: ")
+        proxy_port = input("Enter the proxy port number: ")
+        proxy = {"http": f"http://{proxy_ip}:{proxy_port}", "https": f"https://{proxy_ip}:{proxy_port}"}
+    scanner = WebsiteVulnerabilityScanner(url, proxy=proxy)
     scanner.scan()
-
