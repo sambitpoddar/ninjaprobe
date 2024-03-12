@@ -304,15 +304,15 @@ class WebsiteVulnerabilityScanner:
         file_name = f"ninja_scan_results_{current_time}.txt"
         with open(file_name, "w") as file:
             file.write("Vulnerability Scan Results:\n")
-            for link in self.vulnerable_links:
+            for link, vulnerabilities in self.vulnerable_links.items():  # Iterate over items to access both link and vulnerabilities
                 file.write(f"URL: {link}\n")
                 file.write("Vulnerabilities Found:\n")
-                for test_number in range(1, 32):  # Assuming there are 31 test cases
-                    if test_number in self.vulnerable_links[link]:
-                        file.write(f"- {self.get_test_name(test_number)}\n")
+                for vulnerability in vulnerabilities:
+                    file.write(f"- {self.get_test_name(vulnerability)}\n")  # Get the name of the vulnerability
                 file.write("\n")
               
         print(f"Results saved to '{file_name}'.")
+      
 
 
     def get_test_name(self, test_number):
