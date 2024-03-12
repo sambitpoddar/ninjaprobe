@@ -80,10 +80,10 @@ pip install -r requirements.txt
 
 ## Usage
 
-1. Run the `ninjaprobe.py` script:
+1. Run the `ninja.py` script:
 
 ```bash
-python ninjaprobe.py
+python ninja.py
 ```
 
 2. Follow the on-screen prompts to enter the website URL, choose whether to use a proxy, and select the tests to run.
@@ -97,6 +97,8 @@ To run tests for NinjaProbe, execute the `test_cases.py` file located in the `te
 ```bash
 python tests/test_cases.py
 ```
+## Author
+- Email: [sambitpoddar@yahoo.com](mailto:sambitpoddar@yahoo.com)
 
 ## Contributing
 
