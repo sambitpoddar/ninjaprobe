@@ -39,7 +39,7 @@ To run a vulnerability scan with NinjaProbe, follow these steps:
 
 - **Permission**: Ensure you have permission to conduct security tests on the target website.
 - **Ethical Use**: Use NinjaProbe for educational purposes and ethical security testing only.
-- **Malicious Code**: Replace the `backdoor.php` file with genuine malicious code only for testing purposes.
+- **Malicious Code**: Replace the `backdoor.php` file with genuine compromised code only for testing purposes.
 - **Data Handling**: Handle scan results responsibly and securely. Avoid sharing sensitive information without proper authorization.
 
 ## Example Tests
