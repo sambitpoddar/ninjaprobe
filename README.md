@@ -99,6 +99,7 @@ python tests/test_cases.py
 ```
 ## Author
 - Email: [sambitpoddar@yahoo.com](mailto:sambitpoddar@yahoo.com)
+- LinkedIn: [](https://linkedin.com/in/sambitpoddar)
 
 ## Contribute
 
