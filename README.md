@@ -100,7 +100,7 @@ python tests/test_cases.py
 ## Author
 - Email: [sambitpoddar@yahoo.com](mailto:sambitpoddar@yahoo.com)
 
-## Contributing
+## Contribute
 
 Contributions to NinjaProbe are welcome! If you'd like to contribute to the project, please follow these steps:
 
