@@ -92,10 +92,10 @@ python ninja.py
 
 ## Tests
 
-To run tests for NinjaProbe, execute the `test_cases.py` file located in the `tests` directory:
+To run tests for NinjaProbe, execute the `test_ninja.py` file located in the `tests` directory:
 
 ```bash
-python tests/test_cases.py
+python tests/test_ninja.py
 ```
 ## Author
 - Email: [sambitpoddar@yahoo.com](mailto:sambitpoddar@yahoo.com)
