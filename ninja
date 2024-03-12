@@ -36,10 +36,12 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import re
 import concurrent.futures
+import datetime
 
 class WebsiteVulnerabilityScanner:
-    def __init__(self, target_url):
+    def __init__(self, target_url, proxy=None):
         self.target_url = target_url
+        self.proxy = proxy
         self.session = requests.Session()
         self.links_to_scan = set()
         self.vulnerable_links = set()
@@ -293,6 +295,19 @@ class WebsiteVulnerabilityScanner:
         else:
             print("No vulnerabilities found.")
 
+    def save_results_to_file(self):
+        """
+        Saves the results of the vulnerability scan to a text file with date and name of the test.
+        """
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        file_name = f"vulnerability_scan_results_{current_date}.txt"
+        with open(file_name, "w") as file:
+            file.write("Vulnerability Scan Results:\n")
+            for link in self.vulnerable_links:
+                file.write(f"{link}\n")
+        print(f"Results saved to '{file_name}'.")
+
+
 # Example usage:
 if __name__ == "__main__":
     url = input("Enter the website URL: ")
@@ -304,3 +319,4 @@ if __name__ == "__main__":
         proxy = {"http": f"http://{proxy_ip}:{proxy_port}", "https": f"https://{proxy_ip}:{proxy_port}"}
     scanner = WebsiteVulnerabilityScanner(url, proxy=proxy)
     scanner.scan()
+    scanner.save_results_to_file()
