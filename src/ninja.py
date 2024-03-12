@@ -305,8 +305,57 @@ class WebsiteVulnerabilityScanner:
         with open(file_name, "w") as file:
             file.write("Vulnerability Scan Results:\n")
             for link in self.vulnerable_links:
-                file.write(f"{link}\n")
+                file.write(f"URL: {link}\n")
+                file.write("Vulnerabilities Found:\n")
+                for test_number in range(1, 32):  # Assuming there are 31 test cases
+                    if test_number in self.vulnerable_links[link]:
+                        file.write(f"- {self.get_test_name(test_number)}\n")
+                file.write("\n")
+              
         print(f"Results saved to '{file_name}'.")
+
+
+    def get_test_name(self, test_number):
+        """
+        Returns the name of the vulnerability test based on the test number.
+        """
+        test_names = {
+            1: "SQL Injection",
+            2: "Cross-Site Scripting (XSS)",
+            3: "Cross-Site Request Forgery (CSRF)",
+            4: "Directory Traversal",
+            5: "Remote Code Execution",
+            6: "Insecure File Upload",
+            7: "Insecure Direct Object References (IDOR)",
+            8: "XML External Entities (XXE)",
+            9: "Insecure Cryptographic Implementations",
+            10: "Insecure Deserialization",
+            11: "Insecure Redirect",
+            12: "Weak Password Policy",
+            13: "Sensitive Data Exposure",
+            14: "SSL/TLS Issues",
+            15: "Insecure CORS Policy",
+            16: "Missing Security Headers",
+            17: "Server-Side Request Forgery (SSRF)",
+            18: "XML Injection",
+            19: "File Inclusion",
+            20: "OS Command Injection",
+            21: "Server-Side Template Injection (SSTI)",
+            22: "Server-Side Request (SSR)",
+            23: "Mass Assignment",
+            24: "XPath Injection",
+            25: "Local File Inclusion (LFI)",
+            26: "Clickjacking",
+            27: "Insecure Cookies",
+            28: "Insecure Login Page",
+            29: "Misconfigured Security Headers",
+            30: "Weak Cryptography",
+            31: "Session Fixation"
+        }
+        return test_names.get(test_number, "Unknown Test")
+      
+
+    
 
 
 # Example usage:
