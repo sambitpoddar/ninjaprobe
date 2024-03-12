@@ -47,12 +47,12 @@ class WebsiteVulnerabilityScanner:
         self.vulnerable_links = set()
         self.links_to_ignore = ['logout.php', 'register.php']  # URLs to ignore during scanning
 
-    def extract_links(self, url):
+    def extract_links(self, url, proxies=None):
         response = self.session.get(url)
         soup = BeautifulSoup(response.content, "html.parser")
         return [urljoin(url, link.get("href")) for link in soup.find_all("a", href=True)]
 
-    def crawl(self, url=None):
+    def crawl(self, url=None, proxies=None):
         if url is None:
             url = self.target_url
         links = self.extract_links(url)
@@ -62,7 +62,7 @@ class WebsiteVulnerabilityScanner:
             if self.target_url in link:
                 self.links_to_scan.add(link)
 
-    def test_sql_injection(self, url):
+    def test_sql_injection(self, url, proxies=None):
         """
         Tests for SQL Injection vulnerability by injecting SQL syntax into the URL parameters.
     
@@ -74,7 +74,7 @@ class WebsiteVulnerabilityScanner:
             self.vulnerable_links.add(url)
 
 
-    def test_xss(self, url):
+    def test_xss(self, url, proxies=None):
         """
         Tests for Cross-Site Scripting (XSS) vulnerability by injecting a script tag into the URL parameters.
     
@@ -85,12 +85,12 @@ class WebsiteVulnerabilityScanner:
         if "<script>alert(" in response.text:
             self.vulnerable_links.add(url)
 
-    def test_csrf(self, url):
+    def test_csrf(self, url, proxies=None):
         response = self.session.get(url)
         if "csrf_token" not in response.text:
             self.vulnerable_links.add(url)
 
-    def test_directory_traversal(self, url):
+    def test_directory_traversal(self, url, proxies=None):
         response = self.session.get(url + "../../../../etc/passwd")
         if "root:" in response.text:
             self.vulnerable_links.add(url)
@@ -242,7 +242,7 @@ class WebsiteVulnerabilityScanner:
         if "Set-Cookie" in response.headers and "HttpOnly" not in response.headers["Set-Cookie"]:
             self.vulnerable_links.add(url)
 
-    def test_vulnerabilities(self, tests):
+    def test_vulnerabilities(self, tests, proxies=None):
         tests_mapping = {
             1: self.test_sql_injection,
             2: self.test_xss,
@@ -277,7 +277,7 @@ class WebsiteVulnerabilityScanner:
             31: self.test_session_fixation,
         }
         for test_number in tests:
-            tests_mapping[test_number](self.target_url)
+            tests_mapping[test_number](self.target_url, proxies)
 
     def scan(self):
         self.crawl()
@@ -287,7 +287,8 @@ class WebsiteVulnerabilityScanner:
         else:
             custom_tests = input("Enter the numbers of tests to run (separated by commas): ")
             tests_to_run = [int(num) for num in custom_tests.split(",")]
-        self.test_vulnerabilities(tests_to_run)
+        proxies = self.proxy if self.proxy else None
+        self.test_vulnerabilities(tests_to_run, proxies)
         if self.vulnerable_links:
             print("Vulnerabilities found:")
             for link in self.vulnerable_links:
