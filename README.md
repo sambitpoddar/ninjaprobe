@@ -1,9 +1,6 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/your-package-name.svg)](https://pypi.org/project/your-package-name/)
-[![Downloads: 1k](https://pepy.tech/badge/your-package-name)](https://pepy.tech/project/your-package-name)
+[![Downloads](https://pepy.tech/badge/your-package-name)](https://pepy.tech/project/your-package-name)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![Documentation Status](https://readthedocs.org/projects/your-repo/badge/?version=latest)](https://your-repo.readthedocs.io/en/latest/?badge=latest)
-# NinjaProbe
-
 NinjaProbe is a powerful tool developed to assist developers and security professionals in identifying and mitigating security vulnerabilities present in web applications. With its extensive range of vulnerability tests and user-friendly interface, NinjaProbe makes it easy to perform comprehensive security assessments and strengthen the security posture of web applications.
 
 ```
