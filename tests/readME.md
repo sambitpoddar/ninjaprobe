@@ -11,7 +11,7 @@ This directory contains unit tests for the `ninja.py` module.
 To run the tests, navigate to the root directory of the project and execute the following command:
 
 ```
-python -m unittest discover tests
+PYTHONPATH=~/storage/emulated/0/ninjaprobe python -m unittest discover tests
 ```
 
 This command will automatically discover and execute all test files in the `tests` directory.
