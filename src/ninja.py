@@ -285,7 +285,7 @@ class WebsiteVulnerabilityScanner:
         for link in self.vulnerable_links:
             for test_number in tests:
                 if test_number in self.vulnerable_links[link]:
-                    self.vulnerabilities.setdefault(link, set()).add(test_number)  # Ensure self.vulnerable_links is a dictionary
+                    self.vulnerable_links.setdefault(link, set()).add(test_number)  # Ensure self.vulnerable_links is a dictionary
 
     def scan(self):
         self.crawl()
