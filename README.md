@@ -1,7 +1,7 @@
 [![Python3.11](https://img.shields.io/badge/Python-3.11-green.svg?style=flat-square)](https://www.python.org/downloads/release/python-2714/) 
 ![OS](https://img.shields.io/badge/Tested%20On-Linux%20|%20Windows%20|%20Android-yellowgreen.svg?style=flat-square)
 
-NinjaProbe is a powerful tool developed to assist developers and security professionals in identifying and mitigating security vulnerabilities present in web applications. With its extensive range of vulnerability tests and user-friendly interface, NinjaProbe makes it easy to perform comprehensive security assessments and strengthen the security posture of web applications.
+Ninja Probe is a powerful tool developed to assist developers and security professionals in identifying and mitigating security vulnerabilities present in web applications. With its extensive range of vulnerability tests and user-friendly interface, NinjaProbe makes it easy to perform comprehensive security assessments and strengthen the security posture of web applications.
 
 ```
  _   _ _       _        ______          _          
@@ -104,7 +104,7 @@ python tests/test_ninja.py
 
 ## Contribute
 
-Contributions to NinjaProbe are welcome! If you'd like to contribute to the project, please follow these steps:
+Contributions to Ninja Probe are welcome! If you'd like to contribute to the project, please follow these steps:
 
 1. Fork the repository on GitHub.
 2. Create a new branch for your feature or bug fix.
@@ -118,7 +118,7 @@ NinjaProbe is licensed under the MIT License. See the [LICENSE](LICENSE) file fo
 
 ## Disclaimer
 
-NinjaProbe is intended for educational purposes only. The use of this tool for any malicious or illegal activities is strictly prohibited. The author of NinjaProbe shall not be liable for any damages or legal consequences resulting from the misuse of this tool.
+Ninja Probe is intended for educational purposes only. The use of this tool for any malicious or illegal activities is strictly prohibited. The author of Ninja Probe shall not be liable for any damages or legal consequences resulting from the misuse of this tool.
 
 ---
 
