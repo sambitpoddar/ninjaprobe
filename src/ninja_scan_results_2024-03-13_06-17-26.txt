@@ -1,0 +1,11 @@
+Vulnerability Scan Results:
+URL: https://google-gruyere.appspot.com/664861090575429629224477272329364464636/
+Vulnerabilities Found:
+- Cross-Site Request Forgery (CSRF)
+- Remote Code Execution
+- Insecure Direct Object References (IDOR)
+- Missing Security Headers
+- Clickjacking
+- Insecure Cookies
+- Misconfigured Security Headers
+
