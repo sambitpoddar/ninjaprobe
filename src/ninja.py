@@ -278,6 +278,10 @@ class WebsiteVulnerabilityScanner:
         }
         for test_number in tests:
             tests_mapping[test_number](self.target_url, proxies)
+        for test_number in tests:
+        for link in self.vulnerable_links:
+            if test_number in self.vulnerable_links[link]:
+                self.vulnerabilities.setdefault(link, set()).add(test_number)
 
     def scan(self):
         self.crawl()
