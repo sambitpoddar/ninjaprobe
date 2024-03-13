@@ -1,4 +1,7 @@
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![Python3.11](https://img.shields.io/badge/Python-3.11-green.svg?style=flat-square)](https://www.python.org/downloads/release/python-2714/) 
+![OS](https://img.shields.io/badge/Tested%20On-Linux%20|%20OSX%20|%20Windows%20|%20Android-yellowgreen.svg?style=flat-square) 
+![Docker](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?style=flat-square)
 
 NinjaProbe is a powerful tool developed to assist developers and security professionals in identifying and mitigating security vulnerabilities present in web applications. With its extensive range of vulnerability tests and user-friendly interface, NinjaProbe makes it easy to perform comprehensive security assessments and strengthen the security posture of web applications.
 
