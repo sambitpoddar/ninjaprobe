@@ -44,7 +44,7 @@ class WebsiteVulnerabilityScanner:
         self.proxy = proxy
         self.session = requests.Session()
         self.links_to_scan = set()
-        self.vulnerable_links = set()
+        self.vulnerable_links = {}
         self.links_to_ignore = ['logout.php', 'register.php']  # URLs to ignore during scanning
 
     def extract_links(self, url, proxies=None):
@@ -71,7 +71,7 @@ class WebsiteVulnerabilityScanner:
         """
         response = self.session.get(url, proxies=proxies)
         if re.search(r"SQL syntax.*MySQL", response.text):
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
 
     def test_xss(self, url, proxies=None):
@@ -83,34 +83,34 @@ class WebsiteVulnerabilityScanner:
         """
         response = self.session.get(url, proxies=proxies)
         if "<script>alert(" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_csrf(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "csrf_token" not in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_directory_traversal(self, url, proxies=None):
         response = self.session.get(url + "../../../../etc/passwd", proxies=proxies)
         if "root:" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_remote_code_execution(self, url, proxies=None):
         payload = "<?php echo shell_exec('id'); ?>"
         response = self.session.post(url, data={'code': payload}, proxies=proxies)
         if "uid=" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_file_upload(self, url, proxies=None):
         files = {'file': open('backdoor.php', 'rb')}  # Replace 'backdoor.php' with a file containing compromised code like backdoor
         response = self.session.post(url, files=files, proxies=proxies)
         if "evil.php" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_idor(self, url, proxies=None):
         response = self.session.get(url + "/user_profile?id=1", proxies=proxies)
         if "user_profile" in response.url:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_xxe(self, url, proxies=None):
         payload = """<?xml version="1.0"?>
@@ -121,126 +121,126 @@ class WebsiteVulnerabilityScanner:
         headers = {'Content-Type': 'application/xml'}
         response = self.session.post(url, data=payload, headers=headers, proxies=proxies)
         if "root:" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_crypto(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "md5(" in response.text or "SHA1(" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_deserialization(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "pickle" in response.text or "marshmallow" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_redirect(self, url, proxies=None):
         response = self.session.get(url, allow_redirects=False, proxies=proxies)
         if response.status_code == 302 and "example.com" not in response.headers.get('Location', ''):
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_weak_password_policy(self, url, proxies=None):
         response = self.session.post(url, data={'username': 'admin', 'password': 'password'}, proxies=proxies)
         if "Invalid password" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_sensitive_data_exposure(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "API_KEY" in response.text or "password" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_ssl_tls_issues(self, url, proxies=None):
         response = self.session.get(url, verify=False, proxies=proxies)
         if "CERTIFICATE_VERIFY_FAILED" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_cors_policy(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "Access-Control-Allow-Origin: *" in response.headers:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_security_headers_missing(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "X-Frame-Options" not in response.headers or "Content-Security-Policy" not in response.headers:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_server_side_request_forgery(self, url, proxies=None):
         response = self.session.get(url + "/?url=http://localhost:8080", proxies=proxies)
         if "localhost" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_xml_injection(self, url, proxies=None):
         payload = "<user><name>John</name><age>20</age></user>"
         response = self.session.post(url, data=payload, proxies=proxies)
         if "John" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_file_inclusion(self, url, proxies=None):
         response = self.session.get(url + "?file=../../../../etc/passwd", proxies=proxies)
         if "root:" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_os_command_injection(self, url, proxies=None):
         payload = "127.0.0.1; ls -la"
         response = self.session.get(url + "?ip=" + payload, proxies=proxies)
         if "passwd" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_ssti(self, url, proxies=None):
         payload = "{{ 7*'7' }}"
         response = self.session.get(url + "?name=" + payload, proxies=proxies)
         if "7777777" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_ssr(self, url, proxies=None):
         response = self.session.get(url + "/?url=http://localhost:8080", proxies=proxies)
         if "localhost" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_mass_assignment(self, url, proxies=None):
         response = self.session.post(url, data={'admin': 'true'}, proxies=proxies)
         if "Welcome admin" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_xpath_injection(self, url, proxies=None):
         payload = "' or 1=1 or ''='"
         response = self.session.post(url, data={'username': payload, 'password': 'password'}, proxies=proxies)
         if "Welcome admin" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_lfi(self, url, proxies=None):
         response = self.session.get(url + "?file=../../../../etc/passwd", proxies=proxies)
         if "root:" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_clickjacking(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "X-Frame-Options" not in response.headers or "DENY" not in response.headers["X-Frame-Options"]:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_cookies(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "HttpOnly" not in response.cookies.get_dict():
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_insecure_login_page(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "login" in response.url.lower() or "signin" in response.url.lower():
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_misconfigured_security_headers(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "Content-Security-Policy" not in response.headers or "X-XSS-Protection" not in response.headers:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_weak_cryptography(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "md5(" in response.text or "SHA1(" in response.text or "base64" in response.text:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_session_fixation(self, url, proxies=None):
         response = self.session.get(url, proxies=proxies)
         if "Set-Cookie" in response.headers and "HttpOnly" not in response.headers["Set-Cookie"]:
-            self.vulnerable_links.add(url)
+            self.vulnerable_links.setdefault(url, set()).add(test_number)
 
     def test_vulnerabilities(self, tests, proxies=None):
         tests_mapping = {
