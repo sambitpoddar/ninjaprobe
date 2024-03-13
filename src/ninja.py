@@ -277,7 +277,10 @@ class WebsiteVulnerabilityScanner:
             31: self.test_session_fixation,
         }
         for test_number in tests:
-            tests_mapping[test_number](self.target_url, proxies)
+            if test_number in tests_mapping:
+                tests_mapping[test_number](self.target_url, test_number, proxies)
+            else:
+                print(f"Test number {test_number} is not valid.")
         # Populate self.vulnerable_links dictionary
         for link in self.vulnerable_links:
             for test_number in tests:
